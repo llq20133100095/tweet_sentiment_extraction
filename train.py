@@ -1,7 +1,6 @@
 # coding: utf-8
 import tensorflow as tf
 from hparame import Hparame
-import bert
 from prepro import process_data, create_tokenizer_from_hub_module
 from datetime import datetime
 import run_classifier_custom
@@ -217,7 +216,11 @@ if __name__ == "__main__":
             _, _gs, _summary, _loss = sess.run([train_op, global_step, train_summaries, loss])
             summary_writer.add_summary(_summary, _gs)
 
-            if _gs and _gs % 500 == 0:
+            if _gs and _gs == num_train_steps:
+                ckpt_name = os.path.join(hp.OUTPUT_DIR, hp.model_output)
+                saver.save(sess, ckpt_name, global_step=_gs)
+
+            elif _gs and _gs % 500 == 0:
                 logging.info("# Loss")
                 logging.info(_loss)
 
