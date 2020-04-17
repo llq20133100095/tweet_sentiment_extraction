@@ -62,8 +62,8 @@ def create_model(bert_config, is_training, is_predicting, input_ids, input_mask,
             return (predicted_labels, log_probs)
 
         # If we're train/eval, compute loss between predicted and actual label
-        per_example_loss = tf.reduce_sum(tf.reduce_sum(one_hot_labels * log_probs, axis=-1), axis=-1)
-        loss = -tf.reduce_mean(per_example_loss)
+        per_example_loss = -tf.reduce_sum(tf.reduce_sum(one_hot_labels * log_probs, axis=-1), axis=-1)
+        loss = tf.reduce_mean(per_example_loss)
         return (loss, predicted_labels, log_probs)
 
 
