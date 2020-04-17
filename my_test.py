@@ -68,13 +68,13 @@ def eval_decoded_texts(texts, predicted_labels, sentiment_ids, tokenizer):
 
 
 if __name__ == "__main__":
-    texts = ['Well thatï¿½s disappointing to hear.', 'http://twitpic.com/4w75p - I like it!!']
+    texts = ['is back home now      gonna miss every one', 'onna']
     predicted_labels = [[0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0] * 6 + [1] * 2 + [0] * 17]
     sentiment_ids = [1, 0]
     tokenizer = create_tokenizer_from_hub_module(hp)
-    output = eval_decoded_texts(texts, predicted_labels, sentiment_ids, tokenizer)
-    print(output)
-    # text_token = tokenizer.tokenize(texts[0])
-    # print(text_token[:3])
-    # print(texts[0].lower().split()[1])
-    # print("".join(text_token[1:3]).replace("##", "") == texts[0].lower().split()[1].decode("utf-8", "ignore"))
+    # output = eval_decoded_texts(texts, predicted_labels, sentiment_ids, tokenizer)
+    # print(output)
+    text_token = tokenizer.tokenize(texts[0])
+    text_token2 = tokenizer.tokenize(texts[1])
+    print(text_token)
+    print(text_token2)

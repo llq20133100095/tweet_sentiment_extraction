@@ -30,6 +30,8 @@ class InputFeatures(object):
                  label_id_list,
                  sentiment_id,
                  texts,
+                 idx_start=None,
+                 idx_end=None,
                  selected_texts="",
                  is_real_example=True):
         self.input_ids = input_ids
@@ -38,6 +40,8 @@ class InputFeatures(object):
         self.label_id_list = label_id_list
         self.sentiment_id = sentiment_id
         self.texts = texts
+        self.idx_start = idx_start
+        self.idx_end = idx_end
         self.selected_texts = selected_texts
         self.is_real_example = is_real_example
 
@@ -116,6 +120,11 @@ def convert_single_example(ex_index, example, max_seq_length, tokenizer, is_pred
         for char_idx in range(idx_start, idx_end):
             label_id_list[char_idx] = 1
 
+        if idx_start >= max_seq_length - 3:
+            idx_start = max_seq_length - 3 - 1
+        if idx_end >= max_seq_length - 3:
+            idx_end = max_seq_length - 3 - 1
+
     if tokens_b:
         # Modifies `tokens_a` and `tokens_b` in place so that the total
         # length is less than the specified length.
@@ -189,12 +198,15 @@ def convert_single_example(ex_index, example, max_seq_length, tokenizer, is_pred
         tf.logging.info("segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
         if example.selected_text is not None:
             tf.logging.info("selected_text: %s" % (" ".join(selected_texts_a)))
+            tf.logging.info("idx_start: %d" % idx_start)
+            tf.logging.info("idx_end: %d" % idx_end)
         else:
             tf.logging.info("selected_text: None in test")
         tf.logging.info("label_id_list: %s" % " ".join([str(x) for x in label_id_list]))
         tf.logging.info("sentiment_id: %d" % example.sentiment)
 
     if not is_predicting:
+        print(example.text_a)
         feature = InputFeatures(
             input_ids=input_ids,
             input_mask=input_mask,
@@ -202,6 +214,8 @@ def convert_single_example(ex_index, example, max_seq_length, tokenizer, is_pred
             label_id_list=label_id_list,
             sentiment_id=example.sentiment,
             texts=example.text_a,
+            idx_start=idx_start + 1,
+            idx_end=idx_end + 1,
             selected_texts=example.selected_text,
             is_real_example=True)
     else:
@@ -243,6 +257,8 @@ def input_fn_builder(features, seq_length, drop_remainder, is_predicting):
     all_label_id_list = []
     all_sentiment_id = []
     all_texts = []
+    all_idx_start = []
+    all_idx_end = []
     all_selected_texts = []
 
     for feature in features:
@@ -252,6 +268,8 @@ def input_fn_builder(features, seq_length, drop_remainder, is_predicting):
         all_label_id_list.append(feature.label_id_list)
         all_sentiment_id.append(feature.sentiment_id)
         all_texts.append(feature.texts)
+        all_idx_start.append(feature.idx_start)
+        all_idx_end.append(feature.idx_end)
         all_selected_texts.append(feature.selected_texts)
 
     def input_fn(params):
@@ -284,6 +302,10 @@ def input_fn_builder(features, seq_length, drop_remainder, is_predicting):
                 tf.constant(all_sentiment_id, shape=[num_examples], dtype=tf.int32),
             "texts":
                 tf.constant(all_texts, shape=[num_examples], dtype=tf.string),
+            "idx_start":
+                tf.constant(all_idx_start, shape=[num_examples], dtype=tf.int32),
+            "idx_end":
+                tf.constant(all_idx_end, shape=[num_examples], dtype=tf.int32),
             "selected_texts":
                 tf.constant(all_selected_texts, shape=[num_examples], dtype=tf.string),
         })
