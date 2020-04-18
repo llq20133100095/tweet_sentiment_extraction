@@ -22,7 +22,7 @@ def create_tokenizer_from_hub_module(hp):
 def process_data(hp):
     tokenizer = create_tokenizer_from_hub_module(hp)
 
-    train = load_dataset('./input_data/train.csv')
+    train = load_dataset('./input_data/train_process.csv')
     test = load_dataset('./input_data/test.csv')
     # train = train.sample(5000)
     # test = test.sample(5000)

@@ -3,11 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data/submission.csv" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/submission.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data/train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/train.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input_data/train_process.csv" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/train_process.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prepro.py" beforeDir="false" afterPath="$PROJECT_DIR$/prepro.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/process_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_classifier_custom.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_classifier_custom.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -106,7 +105,8 @@
       <workItem from="1586915267822" duration="27705000" />
       <workItem from="1587000514143" duration="24798000" />
       <workItem from="1587087676213" duration="15381000" />
-      <workItem from="1587124316768" duration="3965000" />
+      <workItem from="1587124316768" duration="6651000" />
+      <workItem from="1587171401577" duration="8257000" />
     </task>
     <servers />
   </component>
@@ -128,16 +128,16 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/prepro.py</url>
-          <line>1</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/tweet_sentiment_extraction$process_data.coverage" NAME="process_data Coverage Results" MODIFIED="1587126859753" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/tweet_sentiment_extraction$process_data.coverage" NAME="process_data Coverage Results" MODIFIED="1587179846403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

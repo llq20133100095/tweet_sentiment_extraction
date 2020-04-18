@@ -206,7 +206,6 @@ def convert_single_example(ex_index, example, max_seq_length, tokenizer, is_pred
         tf.logging.info("sentiment_id: %d" % example.sentiment)
 
     if not is_predicting:
-        print(example.text_a)
         feature = InputFeatures(
             input_ids=input_ids,
             input_mask=input_mask,
