@@ -112,7 +112,7 @@ def convert_single_example(ex_index, example, max_seq_length, tokenizer, is_pred
         for index in (i for i, c in enumerate(tokens_a) if c == selected_texts_a[0]):
             if tokens_a[index:index + len(selected_texts_a)] == selected_texts_a:
                 idx_start = index
-                idx_end = index + len(selected_texts_a)
+                idx_end = index + len(selected_texts_a) - 1
                 break
 
     label_id_list = [0] * len(tokens_a)
@@ -124,6 +124,10 @@ def convert_single_example(ex_index, example, max_seq_length, tokenizer, is_pred
             idx_start = max_seq_length - 3 - 1
         if idx_end >= max_seq_length - 3:
             idx_end = max_seq_length - 3 - 1
+
+        # add [CLS]
+        idx_start += 1
+        idx_end += 1
 
     if tokens_b:
         # Modifies `tokens_a` and `tokens_b` in place so that the total
@@ -213,8 +217,8 @@ def convert_single_example(ex_index, example, max_seq_length, tokenizer, is_pred
             label_id_list=label_id_list,
             sentiment_id=example.sentiment,
             texts=example.text_a,
-            idx_start=idx_start + 1,
-            idx_end=idx_end + 1,
+            idx_start=idx_start,
+            idx_end=idx_end,
             selected_texts=example.selected_text,
             is_real_example=True)
     else:

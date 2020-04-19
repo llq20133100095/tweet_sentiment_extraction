@@ -166,5 +166,19 @@ python3 test.py
 
 最后会生成可以提交的csv文件：[submission.csv](./input_data/submission.csv)
 
+## 3. version 2
 
+目前发现在数据集上，selected_text中没有进行数据清洗，里面有很多缺失的词语。
+通常在开头和结尾处，词语显示不完整。比如：
+```
+text: happy birthday
+selected_text: y birthday
+```
+上面在开头缺少了“happy”这个词语，所以需要补上。
+
+同时也存在两个单词没有空格开，比如
+```
+text: birthday,say say
+selected_text: say say
+```
 
