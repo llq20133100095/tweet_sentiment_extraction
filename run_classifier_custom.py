@@ -30,8 +30,8 @@ class InputFeatures(object):
                  label_id_list,
                  sentiment_id,
                  texts,
-                 idx_start=None,
-                 idx_end=None,
+                 idx_start=0,
+                 idx_end=0,
                  selected_texts="",
                  is_real_example=True):
         self.input_ids = input_ids
