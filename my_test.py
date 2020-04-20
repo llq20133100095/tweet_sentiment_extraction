@@ -68,13 +68,13 @@ def eval_decoded_texts(texts, predicted_labels, sentiment_ids, tokenizer):
 
 
 if __name__ == "__main__":
-    texts = ['is back home now      gonna miss every one', 'onna']
-    predicted_labels = [[0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0] * 6 + [1] * 2 + [0] * 17]
+    texts = ['is back home now      gonna miss every one']
+    predicted_labels = [[0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     sentiment_ids = [1, 0]
     tokenizer = create_tokenizer_from_hub_module(hp)
-    # output = eval_decoded_texts(texts, predicted_labels, sentiment_ids, tokenizer)
-    # print(output)
-    text_token = tokenizer.tokenize(texts[0])
-    text_token2 = tokenizer.tokenize(texts[1])
-    print(text_token)
-    print(text_token2)
+    output = eval_decoded_texts(texts, predicted_labels, sentiment_ids, tokenizer)
+    print(output)
+    # text_token = tokenizer.tokenize(texts[0])
+    # text_token2 = tokenizer.tokenize(texts[1])
+    # print(text_token)
+    # print(text_token2)

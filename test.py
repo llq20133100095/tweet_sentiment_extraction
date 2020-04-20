@@ -10,9 +10,9 @@ import tensorflow as tf
 from hparame import Hparame
 from prepro import process_test_data, create_tokenizer_from_hub_module, process_data
 import run_classifier_custom
-from train import train_eval_test_model, eval_decoded_texts
+from train import train_eval_test_model, eval_decoded_texts, eval_decoded_texts_no_id
 from bert import modeling
-from util import jaccard
+from util import jaccard, eval_decoded_texts_in_position
 import pandas as pd
 import numpy as np
 import logging
@@ -37,11 +37,10 @@ features_input = iter.get_next()
 test_init_op = iter.make_initializer(test_batches)
 
 logging.info("# Load model")
-label_list = [int(i) for i in hp.label_list.split(",")]
 tokenizer = create_tokenizer_from_hub_module(hp)
 bert_config = modeling.BertConfig.from_json_file(hp.BERT_CONFIG)
 test_predicted_labels, test_sentiment_ids, test_texts, test_selected_texts = \
-    train_eval_test_model(features=features_input, bert_config=bert_config, num_labels=len(label_list),
+    train_eval_test_model(features=features_input, bert_config=bert_config, num_labels=hp.num_label,
                           learning_rate=None, num_train_steps=None,
                           num_warmup_steps=None,
                           use_one_hot_embeddings=False, is_training=False, is_predicting=True)
@@ -76,15 +75,21 @@ with tf.Session() as sess:
     logging.info("test nums %d " % len(predicted_label_list))
 
     # calculate the jaccards
-    test_predict = eval_decoded_texts(test_texts_list[:test_len], predicted_label_list[:test_len],
+    test_predict = eval_decoded_texts_in_position(test_texts_list[:test_len], predicted_label_list[:test_len],
                                       test_sentiment_ids_list[:test_len], tokenizer)
     # jaccards = []
     # for i in range(len(test_predict)):
     #     jaccards.append(jaccard(test_selected_texts_list[i], test_predict[i]))
     # score = np.mean(jaccards)
     # logging.info("jaccards: %f" % score)
+    #
+    # save_data = pd.DataFrame({"test_texts_list":test_texts_list[:test_len],
+    #                           "text_token_list":text_token_list,
+    #                           "selected_texts":test_selected_texts_list[:test_len],
+    #                           "test_predict":test_predict,
+    #                           "predicted_label_list":predicted_label_list[:test_len]})
+    # save_data.to_csv("./input_data/test_predict.csv", index=False)
 
-    # print(test_predict[:23])
     submission_df = pd.read_csv('./input_data/sample_submission.csv')
     submission_df.loc[:, 'selected_text'] = test_predict
     submission_df.to_csv("./input_data/submission.csv", index=False)

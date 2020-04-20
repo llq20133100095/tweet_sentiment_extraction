@@ -10,7 +10,7 @@ import logging
 from tqdm import tqdm
 import os
 import numpy as np
-from util import jaccard
+from util import jaccard, eval_decoded_texts_in_position
 
 logging.getLogger().setLevel(logging.INFO)
 hparame = Hparame()
@@ -19,8 +19,8 @@ hp = parser.parse_args()
 set_training = True
 
 
-def create_model(bert_config, is_training, is_predicting, input_ids, input_mask, segment_ids, label_id_list,
-                 num_labels, use_one_hot_embeddings):
+def create_model(bert_config, is_training, is_predicting, input_ids, input_mask, segment_ids,
+                 target_start_idx, target_end_idx, num_labels, use_one_hot_embeddings):
     """Creates a classification model."""
     model = modeling.BertModel(
         config=bert_config,
@@ -47,28 +47,61 @@ def create_model(bert_config, is_training, is_predicting, input_ids, input_mask,
         # Dropout helps prevent overfitting
         output_layer = tf.layers.dropout(output_layer, rate=0.1, training=is_training)
 
-        logits = tf.einsum('nth,hl->ntl', output_layer, tf.transpose(output_weights))
-        # logits = tf.matmul(output_layer, output_weights, transpose_b=True)
+        # logits = tf.einsum('nth,hl->ntl', output_layer, tf.transpose(output_weights))
+        # # logits = tf.matmul(output_layer, output_weights, transpose_b=True)
+        # logits = tf.nn.bias_add(logits, output_bias)
+        # log_probs = tf.nn.log_softmax(logits, axis=-1)
+        #
+        # # Convert labels into one-hot encoding
+        # one_hot_labels = tf.one_hot(label_id_list, depth=num_labels, dtype=tf.float32, axis=-1)
+        #
+        # # predicted_labels shape: [N, length]
+        # predicted_labels = tf.squeeze(tf.argmax(log_probs, axis=-1, output_type=tf.int32))
+        # # If we're predicting, we want predicted labels and the probabiltiies.
+        # if is_predicting:
+        #     return (predicted_labels, log_probs)
+        #
+        # # If we're train/eval, compute loss between predicted and actual label
+        # per_example_loss = -tf.reduce_sum(tf.reduce_sum(one_hot_labels * log_probs, axis=-1), axis=-1)
+        # loss = tf.reduce_mean(per_example_loss)
+        # return (loss, predicted_labels, log_probs)
+
+        # get "sentiment" position
+        # sentiment_pos: index: [[0, sentiment_id], [0, sentiment_id], ..., [0, sentiment_id]] > [N, 2]
+        range_insert = tf.reshape(tf.range(tf.shape(output_layer)[0]), [-1, 1])
+        sentiment_pos = tf.concat([range_insert, tf.reshape(tf.cast(tf.squeeze(tf.argmax(segment_ids, axis=-1)),
+                                                                    dtype=tf.int32), [-1, 1])], axis=-1)
+        sentiment_pos_end = tf.concat([range_insert, tf.reshape(tf.cast(tf.squeeze(tf.argmax(segment_ids, axis=-1) + 1),
+                                                                    dtype=tf.int32), [-1, 1])], axis=-1)
+        sentiment_output_start = tf.reshape(tf.gather_nd(output_layer, sentiment_pos), [-1, 1, hidden_size])
+        sentiment_output_end = tf.reshape(tf.gather_nd(output_layer, sentiment_pos_end), [-1, 1, hidden_size])
+        sentiment_output = tf.concat([sentiment_output_start, sentiment_output_end], axis=1)
+
+        logits = tf.einsum('nth,hl->ntl', sentiment_output, tf.transpose(output_weights))
         logits = tf.nn.bias_add(logits, output_bias)
         log_probs = tf.nn.log_softmax(logits, axis=-1)
+        start_logits_probs, end_logits_probs = tf.split(log_probs, 2, axis=1)
+        start_logits_probs = tf.squeeze(start_logits_probs)  # [N, num_labels]
+        end_logits_probs = tf.squeeze(end_logits_probs)
 
-        # Convert labels into one-hot encoding
-        one_hot_labels = optimization.create_optimizer_labels = tf.one_hot(label_id_list, depth=num_labels, dtype=tf.float32, axis=-1)
+        one_hot_start_labels = tf.one_hot(tf.argmax(start_logits_probs, axis=-1), depth=num_labels, dtype=tf.int32, axis=-1)
+        one_hot_end_labels = tf.one_hot(tf.argmax(end_logits_probs, axis=-1), depth=num_labels, dtype=tf.int32, axis=-1)
+        predicted_labels = one_hot_start_labels + one_hot_end_labels
 
-        # predicted_labels shape: [N, length]
-        predicted_labels = tf.squeeze(tf.argmax(log_probs, axis=-1, output_type=tf.int32))
         # If we're predicting, we want predicted labels and the probabiltiies.
         if is_predicting:
             return (predicted_labels, log_probs)
 
-        # If we're train/eval, compute loss between predicted and actual label
-        per_example_loss = -tf.reduce_sum(tf.reduce_sum(one_hot_labels * log_probs, axis=-1), axis=-1)
-        loss = tf.reduce_mean(per_example_loss)
+        one_hot_start_idx = tf.one_hot(target_start_idx, depth=num_labels, dtype=tf.float32, axis=-1)
+        one_hot_end_idx = tf.one_hot(target_end_idx, depth=num_labels, dtype=tf.float32, axis=-1)
+        per_example_start_loss = -tf.reduce_sum(one_hot_start_idx * start_logits_probs, axis=-1)
+        per_example_end_loss = -tf.reduce_sum(one_hot_end_idx * end_logits_probs, axis=-1)
+        loss = tf.reduce_mean(per_example_start_loss) + tf.reduce_mean(per_example_end_loss)
         return (loss, predicted_labels, log_probs)
 
 
 def train_eval_test_model(features, bert_config, num_labels, learning_rate, num_train_steps, num_warmup_steps,
-                     use_one_hot_embeddings, is_training, is_predicting):
+                          use_one_hot_embeddings, is_training, is_predicting):
     input_ids = features["input_ids"]
     input_mask = features["input_mask"]
     segment_ids = features["segment_ids"]
@@ -76,12 +109,14 @@ def train_eval_test_model(features, bert_config, num_labels, learning_rate, num_
     sentiment_ids = features["sentiment_id"]
     texts = features["texts"]
     selected_texts = features["selected_texts"]
+    idx_start = features["idx_start"]
+    idx_end = features["idx_end"]
 
     # TRAIN and EVAL
     if not is_predicting:
         (loss, predicted_labels, log_probs) = create_model(
-            bert_config, is_training, is_predicting, input_ids, input_mask, segment_ids, label_id_list, num_labels,
-            use_one_hot_embeddings)
+            bert_config, is_training, is_predicting, input_ids, input_mask, segment_ids, idx_start, idx_end,
+            num_labels, use_one_hot_embeddings)
 
         train_op = optimization.create_optimizer(
             loss, learning_rate, num_train_steps, num_warmup_steps, use_tpu=False)
@@ -95,7 +130,7 @@ def train_eval_test_model(features, bert_config, num_labels, learning_rate, num_
 
     else:
         (predicted_labels, log_probs) = create_model(
-            bert_config, is_training, is_predicting, input_ids, input_mask, segment_ids, label_id_list, num_labels,
+            bert_config, is_training, is_predicting, input_ids, input_mask, segment_ids, idx_start, idx_end, num_labels,
             use_one_hot_embeddings)
         return predicted_labels, sentiment_ids, texts, selected_texts
 
@@ -160,8 +195,56 @@ def eval_decoded_texts(texts, predicted_labels, sentiment_ids, tokenizer):
     return decoded_texts
 
 
+def eval_decoded_texts_no_id(texts, predicted_labels, sentiment_ids, tokenizer):
+    """
+    no use "record the segment id" in eval_decoded_texts
+    :param texts: 
+    :param predicted_labels: 
+    :param sentiment_ids: 
+    :param tokenizer: 
+    :return: 
+    """
+    decoded_texts = []
+    for i, text in enumerate(texts):
+        if type(text) == type(b""):
+            text = text.decode("utf-8")
+        # sentiment "neutral" or length < 2
+        if sentiment_ids[i] == 0 or len(text.split()) < 2:
+            decoded_texts.append(text)
+
+        else:
+            text_token = tokenizer.tokenize(text)
+
+            # get selected_text
+            selected_text = []
+            predicted_label_id = predicted_labels[i]
+            predicted_label_id.pop(0)
+            for _ in range(len(predicted_label_id) - len(text_token)):
+                predicted_label_id.pop()
+
+            max_len = len(predicted_label_id)
+            assert len(text_token) == max_len
+            j = 0
+            while j < max_len:
+                if predicted_label_id[j] == 1:
+                    start_pos = j
+                    end_pos = j + 1
+                    while start_pos > 0 and "##" in text_token[j]:
+                        start_pos -= 1
+                    while end_pos < max_len and "##" in text_token[j]:
+                        end_pos += 1
+
+                    j = end_pos
+
+                    selected_text.append("".join(text_token[start_pos:end_pos]).replace("##", ""))
+                else:
+                    j += 1
+
+            decoded_texts.append(" ".join(selected_text))
+    return decoded_texts
+
+
 if __name__ == "__main__":
-    label_list = [int(i) for i in hp.label_list.split(",")]
     train_features, eval_features = process_data(hp)
     tokenizer = create_tokenizer_from_hub_module(hp)
 
@@ -189,11 +272,13 @@ if __name__ == "__main__":
 
     logging.info("# Load model")
     bert_config = modeling.BertConfig.from_json_file(hp.BERT_CONFIG)
-    loss, train_op, global_step, train_summaries, eval_predicted_labels, eval_sentiment_ids, eval_texts, \
-        eval_selected_texts = train_eval_test_model(features=features_input, bert_config=bert_config, num_labels=len(label_list),
-                                         learning_rate=hp.LEARNING_RATE, num_train_steps=num_train_steps,
-                                         num_warmup_steps=num_warmup_steps,
-                                         use_one_hot_embeddings=False, is_training=set_training, is_predicting=False)
+    loss, train_op, global_step, train_summaries, eval_predicted_labels, eval_sentiment_ids, \
+    eval_texts, eval_selected_texts = train_eval_test_model(features=features_input, bert_config=bert_config,
+                                                            num_labels=hp.num_label, learning_rate=hp.LEARNING_RATE,
+                                                            num_train_steps=num_train_steps,
+                                                            num_warmup_steps=num_warmup_steps,
+                                                            use_one_hot_embeddings=False, is_training=set_training,
+                                                            is_predicting=False)
 
     logging.info("# Session")
     saver = tf.train.Saver()
@@ -247,7 +332,8 @@ if __name__ == "__main__":
                 logging.info("eval nums %d " % len(predicted_label_list))
 
                 # calculate the jaccards
-                eval_predict = eval_decoded_texts(eval_texts_list, predicted_label_list, eval_sentiment_ids_list, tokenizer)
+                eval_predict = eval_decoded_texts_in_position(eval_texts_list, predicted_label_list, eval_sentiment_ids_list,
+                                                  tokenizer)
                 jaccards = []
                 for i in range(len(eval_predict)):
                     jaccards.append(jaccard(eval_selected_texts_list[i], eval_predict[i]))
@@ -257,4 +343,3 @@ if __name__ == "__main__":
                 logging.info("# fall back to train mode")
                 sess.run(train_init_op)
                 set_training = True
-

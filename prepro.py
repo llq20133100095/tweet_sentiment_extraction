@@ -27,6 +27,8 @@ def process_data(hp):
     # train = train.sample(5000)
     # test = test.sample(5000)
 
+    train = train[train['polarity'].isin([1, 2])]
+    train.reset_index(inplace=True)
     sfolder = StratifiedKFold(n_splits=5, random_state=2020, shuffle=True)
     for kfold_num, (train_idx, eval_idx) in enumerate(sfolder.split(train[hp.DATA_COLUMN], train[hp.polarity])):
         # Use the InputExample class from BERT's run_classifier code to create examples from the data
