@@ -47,25 +47,6 @@ def create_model(bert_config, is_training, is_predicting, input_ids, input_mask,
         # Dropout helps prevent overfitting
         output_layer = tf.layers.dropout(output_layer, rate=0.1, training=is_training)
 
-        # logits = tf.einsum('nth,hl->ntl', output_layer, tf.transpose(output_weights))
-        # # logits = tf.matmul(output_layer, output_weights, transpose_b=True)
-        # logits = tf.nn.bias_add(logits, output_bias)
-        # log_probs = tf.nn.log_softmax(logits, axis=-1)
-        #
-        # # Convert labels into one-hot encoding
-        # one_hot_labels = tf.one_hot(label_id_list, depth=num_labels, dtype=tf.float32, axis=-1)
-        #
-        # # predicted_labels shape: [N, length]
-        # predicted_labels = tf.squeeze(tf.argmax(log_probs, axis=-1, output_type=tf.int32))
-        # # If we're predicting, we want predicted labels and the probabiltiies.
-        # if is_predicting:
-        #     return (predicted_labels, log_probs)
-        #
-        # # If we're train/eval, compute loss between predicted and actual label
-        # per_example_loss = -tf.reduce_sum(tf.reduce_sum(one_hot_labels * log_probs, axis=-1), axis=-1)
-        # loss = tf.reduce_mean(per_example_loss)
-        # return (loss, predicted_labels, log_probs)
-
         # get "sentiment" position
         # sentiment_pos: index: [[0, sentiment_id], [0, sentiment_id], ..., [0, sentiment_id]] > [N, 2]
         range_insert = tf.reshape(tf.range(tf.shape(output_layer)[0]), [-1, 1])
