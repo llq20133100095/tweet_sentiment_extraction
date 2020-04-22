@@ -10,7 +10,7 @@ class Hparame:
     parser.add_argument('--polarity', default="polarity", help="polarity")
     parser.add_argument('--selected_text', default="selected_text", help="selected_text")
     parser.add_argument('--sentiment', default="sentiment", help="sentiment")
-    parser.add_argument('--num_label', default=128, type=int)
+    parser.add_argument('--num_label', default=2, type=int)
 
     # This is a path to an uncased (all lowercase) version of BERTLABEL_COLUMN
     # parser.add_argument("--BERT_MODEL_HUB", default="https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1")
@@ -24,7 +24,7 @@ class Hparame:
     """ train hyper-parameters """
     parser.add_argument("--BATCH_SIZE", default=32, type=int)
     parser.add_argument("--LEARNING_RATE", default=2e-5, type=float)
-    parser.add_argument("--NUM_TRAIN_EPOCHS", default=3.0, type=float)
+    parser.add_argument("--NUM_TRAIN_EPOCHS", default=20.0, type=float)
 
     # Warmup is a period of time where hte learning rate
     # is small and gradually increases--usually helps training.
@@ -35,5 +35,5 @@ class Hparame:
     parser.add_argument("--SAVE_SUMMARY_STEPS", default=100, type=int)
 
     """ save model """
-    parser.add_argument("--OUTPUT_DIR", default="./save_model2/")
+    parser.add_argument("--OUTPUT_DIR", default="./save_model3/")
     parser.add_argument("--model_output", default="bert_model")

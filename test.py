@@ -75,14 +75,14 @@ with tf.Session() as sess:
     logging.info("test nums %d " % len(predicted_label_list))
 
     # calculate the jaccards
-    test_predict = eval_decoded_texts_in_position(test_texts_list[:test_len], predicted_label_list[:test_len],
+    test_predict, text_token_list = eval_decoded_texts_in_position(test_texts_list[:test_len], predicted_label_list[:test_len],
                                       test_sentiment_ids_list[:test_len], tokenizer)
     # jaccards = []
     # for i in range(len(test_predict)):
     #     jaccards.append(jaccard(test_selected_texts_list[i], test_predict[i]))
     # score = np.mean(jaccards)
     # logging.info("jaccards: %f" % score)
-    #
+
     # save_data = pd.DataFrame({"test_texts_list":test_texts_list[:test_len],
     #                           "text_token_list":text_token_list,
     #                           "selected_texts":test_selected_texts_list[:test_len],

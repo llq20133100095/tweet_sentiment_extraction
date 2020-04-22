@@ -14,6 +14,8 @@ def jaccard(str1, str2):
     :param str2:
     :return:
     """
+    if type(str1) == type(b""):
+        str1 = str1.decode("utf-8")
     str1, str2 = str(str1), str(str2)
     a = set(str1.lower().split())
     b = set(str2.lower().split())
@@ -104,15 +106,18 @@ def eval_decoded_texts_in_position(texts, predicted_labels_origin, sentiment_ids
                 else:
                     j += 1
 
-            while start_pos > 0 and "##" in text_token[start_pos]:
-                start_pos -= 1
-                selected_text.insert(0, text_token[start_pos])
+            if start_pos != float("inf") or end_pos != float("-inf"):
+                while start_pos > 0 and "##" in text_token[start_pos]:
+                    start_pos -= 1
+                    selected_text.insert(0, text_token[start_pos])
 
-            end_pos += 1
-            while end_pos < max_len and "##" in text_token[end_pos]:
-                selected_text.insert(len(selected_text), text_token[end_pos])
                 end_pos += 1
+                while end_pos < max_len and "##" in text_token[end_pos]:
+                    selected_text.insert(len(selected_text), text_token[end_pos])
+                    end_pos += 1
 
-            decoded_texts.append(" ".join(selected_text).replace(" ##", ""))
+                decoded_texts.append(" ".join(selected_text).replace(" ##", ""))
+            else:
+                decoded_texts.append("")
 
-    return decoded_texts
+    return decoded_texts, text_token_list
