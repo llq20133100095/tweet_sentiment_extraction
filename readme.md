@@ -182,3 +182,12 @@ text: birthday,say say
 selected_text: say say
 ```
 
+## 4. version 3
+**更改了训练方法。**
+
+上面的第一个版本是直接预测每个单词是否需要抽取，这就需要同时构造多个分类器。观望了一下
+原始数据集，发现抽取到的文本是连续的文本，那么就可以直接标记起始位置(start_label)和结尾位置(end_label)，作为预测label
+这时候原始的N个分类器可以缩减到2个分类器。
+
+本身BERT训练的时候，encoder上共有12层layer。实验中使用了最后的一层layer预测start_label,
+使用倒数第二层预测end_label，这样就可以构造两个分类器来进行预测。

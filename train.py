@@ -55,10 +55,10 @@ def create_model(bert_config, is_training, is_predicting, input_ids, input_mask,
         # softmax operation
         logits = tf.einsum("nlh,hm->nlm", output_layer, tf.transpose(output_weights))
         logits = tf.nn.bias_add(logits, output_bias)
-        logits_probs = tf.nn.log_softmax(logits, axis=-1)
-        start_logits_probs, end_logits_probs = tf.split(logits_probs, 2, axis=-1)
-        start_logits_probs = tf.squeeze(start_logits_probs)
-        end_logits_probs = tf.squeeze(end_logits_probs)
+        # logits_probs = tf.nn.log_softmax(logits, axis=-1)
+        start_logits_probs, end_logits_probs = tf.split(logits, 2, axis=-1)
+        start_logits_probs = tf.squeeze(start_logits_probs, axis=-1)
+        end_logits_probs = tf.squeeze(end_logits_probs, axis=-1)
 
         # Convert labels into one-hot encoding
         one_hot_start_idx = tf.one_hot(target_start_idx, depth=max_len, dtype=tf.float32)
@@ -70,13 +70,15 @@ def create_model(bert_config, is_training, is_predicting, input_ids, input_mask,
 
         # If we're predicting, we want predicted labels and the probabiltiies.
         if is_predicting:
-          return (predicted_labels, logits_probs)
+          return (predicted_labels, logits)
 
         # If we're train/eval, compute loss between predicted and actual label
-        per_example_start_loss = -tf.reduce_sum(one_hot_start_idx * start_logits_probs, axis=-1)
-        per_example_end_loss = -tf.reduce_sum(one_hot_end_idx * end_logits_probs, axis=-1)
-        loss = tf.reduce_mean(per_example_start_loss) + tf.reduce_mean(per_example_end_loss)
-        return (loss, predicted_labels, logits_probs)
+        loss = tf.keras.backend.sparse_categorical_crossentropy(target_start_idx, start_logits_probs, from_logits=True)
+        loss += tf.keras.backend.sparse_categorical_crossentropy(target_end_idx, end_logits_probs, from_logits=True)
+        # per_example_start_loss = -tf.reduce_sum(one_hot_start_idx * start_logits_probs, axis=-1)
+        # per_example_end_loss = -tf.reduce_sum(one_hot_end_idx * end_logits_probs, axis=-1)
+        loss = tf.reduce_mean(loss)
+        return (loss, predicted_labels, logits)
 
 
 def train_eval_test_model(features, bert_config, num_labels, learning_rate, num_train_steps, num_warmup_steps,
