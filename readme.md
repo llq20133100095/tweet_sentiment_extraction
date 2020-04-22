@@ -168,6 +168,7 @@ python3 test.py
 
 ## 3. version 2
 
+### 3.1 数据清洗
 目前发现在数据集上，selected_text中没有进行数据清洗，里面有很多缺失的词语。
 通常在开头和结尾处，词语显示不完整。比如：
 ```
@@ -182,6 +183,21 @@ text: birthday,say say
 selected_text: say say
 ```
 
+具体清洗代码可以看：[process_data.py](process_data.py)
+
+### 3.2 模型方法
+
+更新了新的模型预测方法，具体方法见[util.py下的eval_decoded_texts_in_position方法](util.py)
+
+主要考虑到预测出来的词语中，可能是经过分词器分成的多个部分的词语，因此需要重新还原该词语。
+
+比如：
+```
+text: birthday
+predict： ##day
+```
+这时候需要重新构造整个“birthday”词语，这才是正确的预测方法。
+
 ## 4. version 3
 **更改了训练方法。**
 
@@ -191,3 +207,69 @@ selected_text: say say
 
 本身BERT训练的时候，encoder上共有12层layer。实验中使用了最后的一层layer预测start_label,
 使用倒数第二层预测end_label，这样就可以构造两个分类器来进行预测。
+
+- 模型如下所示：
+
+![model_version3](./figure/model_version3.jpg)
+
+- 代码实现在[train.py](train.py)
+
+```python
+def create_model(bert_config, is_training, is_predicting, input_ids, input_mask, segment_ids,
+                 target_start_idx, target_end_idx, num_labels, use_one_hot_embeddings):
+    """Creates a classification model."""
+    model = modeling.BertModel(
+        config=bert_config,
+        is_training=is_training,
+        input_ids=input_ids,
+        input_mask=input_mask,
+        token_type_ids=segment_ids,
+        use_one_hot_embeddings=use_one_hot_embeddings)
+
+    # Use "pooled_output" for classification tasks on an entire sentence.
+    # Use "sequence_output" for token-level output.
+    # "get_all_encoder_layers" for all encoder layer
+    all_layer = model.get_all_encoder_layers()  # output_layer: 12 layer * [N, max_len, 768]
+
+    hidden_size = all_layer[-1].shape[-1].value
+    max_len = all_layer[-1].shape[1].value
+
+    # Create our own layer to tune for politeness data. shape:[N, max_length, num_labels]
+    with tf.variable_scope("first_softmax_llq", reuse=tf.AUTO_REUSE):
+        output_weights = tf.get_variable("output_weights", [num_labels, 2 * hidden_size],
+                                         initializer=tf.truncated_normal_initializer(stddev=0.02))
+
+        output_bias = tf.get_variable("output_bias", [num_labels], initializer=tf.zeros_initializer())
+
+    with tf.variable_scope("loss"):
+        output_layer = tf.concat([all_layer[-1], all_layer[-2]], axis=-1)
+
+        # Dropout helps prevent overfitting
+        output_layer = tf.layers.dropout(output_layer, rate=0.1, training=is_training)
+
+        # softmax operation
+        logits = tf.einsum("nlh,hm->nlm", output_layer, tf.transpose(output_weights))
+        logits = tf.nn.bias_add(logits, output_bias)
+        # logits_probs = tf.nn.log_softmax(logits, axis=-1)
+        start_logits_probs, end_logits_probs = tf.split(logits, 2, axis=-1)
+        start_logits_probs = tf.squeeze(start_logits_probs, axis=-1)
+        end_logits_probs = tf.squeeze(end_logits_probs, axis=-1)
+
+        # Convert labels into one-hot encoding
+        one_hot_start_idx = tf.one_hot(target_start_idx, depth=max_len, dtype=tf.float32)
+        one_hot_end_idx = tf.one_hot(target_end_idx, depth=max_len, dtype=tf.float32)
+
+        one_hot_start_labels = tf.one_hot(tf.argmax(start_logits_probs, axis=-1), depth=max_len, dtype=tf.int32, axis=-1)
+        one_hot_end_labels = tf.one_hot(tf.argmax(end_logits_probs, axis=-1), depth=max_len, dtype=tf.int32, axis=-1)
+        predicted_labels = one_hot_start_labels + one_hot_end_labels
+
+        # If we're predicting, we want predicted labels and the probabiltiies.
+        if is_predicting:
+          return (predicted_labels, logits)
+
+        # If we're train/eval, compute loss between predicted and actual label
+        loss = tf.keras.backend.sparse_categorical_crossentropy(target_start_idx, start_logits_probs, from_logits=True)
+        loss += tf.keras.backend.sparse_categorical_crossentropy(target_end_idx, end_logits_probs, from_logits=True)
+        loss = tf.reduce_mean(loss)
+        return (loss, predicted_labels, logits)
+```
