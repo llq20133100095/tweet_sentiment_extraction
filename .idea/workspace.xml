@@ -3,8 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/figure/model.vsdx" beforeDir="false" afterPath="$PROJECT_DIR$/figure/model.vsdx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hparame.py" beforeDir="false" afterPath="$PROJECT_DIR$/hparame.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/my_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prepro.py" beforeDir="false" afterPath="$PROJECT_DIR$/prepro.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,6 +32,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="Jupyter Notebook" />
       </list>
     </option>
   </component>
@@ -46,6 +49,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -75,7 +79,7 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/my_test.py" />
       <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -107,6 +111,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.my_test" />
+        <item itemvalue="Python.my_test" />
+        <item itemvalue="Python.my_test" />
         <item itemvalue="Python.process_data" />
       </list>
     </recent_temporary>
@@ -131,7 +137,9 @@
       <workItem from="1587259288435" duration="26991000" />
       <workItem from="1587346543990" duration="24644000" />
       <workItem from="1587433194284" duration="24995000" />
-      <workItem from="1587518145138" duration="12580000" />
+      <workItem from="1587518145138" duration="15553000" />
+      <workItem from="1587611316225" duration="8787000" />
+      <workItem from="1587691655072" duration="7048000" />
     </task>
     <servers />
   </component>

@@ -24,7 +24,7 @@ class Hparame:
     """ train hyper-parameters """
     parser.add_argument("--BATCH_SIZE", default=32, type=int)
     parser.add_argument("--LEARNING_RATE", default=2e-5, type=float)
-    parser.add_argument("--NUM_TRAIN_EPOCHS", default=20.0, type=float)
+    parser.add_argument("--NUM_TRAIN_EPOCHS", default=50.0, type=float)
 
     # Warmup is a period of time where hte learning rate
     # is small and gradually increases--usually helps training.
@@ -35,5 +35,5 @@ class Hparame:
     parser.add_argument("--SAVE_SUMMARY_STEPS", default=100, type=int)
 
     """ save model """
-    parser.add_argument("--OUTPUT_DIR", default="./save_model3/")
+    parser.add_argument("--OUTPUT_DIR", default="./save_model4/")
     parser.add_argument("--model_output", default="bert_model")

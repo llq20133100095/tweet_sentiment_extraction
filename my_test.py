@@ -102,6 +102,7 @@ def process_data(tweet, selected_text, sentiment):
     tok_tweet_offsets = tok_tweet.offsets[3:-1]
     print(tok_tweet_tokens)
     print(tok_tweet.offsets)
+
     # print(tok_tweet_tokens)
     # print(tok_tweet.offsets)
     # ['[CLS]', 'spent', 'the', 'entire', 'morning', 'in', 'a', 'meeting', 'w', '/',

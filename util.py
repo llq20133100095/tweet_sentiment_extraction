@@ -52,6 +52,14 @@ def string_distance(str1, str2):
 
 
 def eval_decoded_texts_in_position(texts, predicted_labels_origin, sentiment_ids, tokenizer):
+    """
+    accroding to the preditction, decoded to the selected text
+    :param texts:
+    :param predicted_labels_origin:
+    :param sentiment_ids:
+    :param tokenizer:
+    :return:
+    """
     predicted_labels = copy.deepcopy(predicted_labels_origin)
     text_token_list = []
     for i, predicted_label in enumerate(predicted_labels):
