@@ -7,8 +7,12 @@ import tensorflow as tf
 import pandas as pd
 import tokenizers
 from sklearn.model_selection import StratifiedKFold
+from transformers import BertConfig, TFBertPreTrainedModel, TFBertMainLayer
 import copy
+import numpy as np
+from tqdm import tqdm
 import logging
+import os
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -318,11 +322,12 @@ def input_fn_builder(features, seq_length, is_predicting):
                 tf.constant(all_selected_texts, shape=[num_examples], dtype=tf.string),
         })
 
-        d = d.repeat()
+        d = d.cache().repeat()
         if not is_predicting:
             d = d.shuffle(100)
 
         d = d.batch(batch_size)
+        d = d.prefetch(tf.data.experimental.AUTOTUNE)
         return d
 
     return input_fn
@@ -424,16 +429,73 @@ class BertQAModel(TFBertPreTrainedModel):
     def call(self, inputs, **kwargs):
         # outputs: Tuple[sequence, pooled, hidden_states]
         _, _, hidden_states = self.bert(inputs, **kwargs)
-
+        
+        
         hidden_states = self.concat([hidden_states[-i] for i in range(1, self.NUM_HIDDEN_STATES + 1)])
 
         hidden_states = self.dropout(hidden_states, training=kwargs.get("training", False))
         logits = self.qa_outputs(hidden_states)
         start_logits, end_logits = tf.split(logits, 2, axis=-1)
-        start_logits = tf.squeeze(start_logits, axis=-1)
+        start_logits = tf.squeeze(start_logits, axis=-1)  # [N, max_len]
         end_logits = tf.squeeze(end_logits, axis=-1)
 
-        return start_logits, end_logits
+        # format of predicted_labels: [N, max_len]
+        max_len = hidden_states.shape[1]
+        one_hot_start_labels = tf.one_hot(tf.argmax(start_logits, axis=-1), depth=max_len, dtype=tf.int32, axis=-1)
+        one_hot_end_labels = tf.one_hot(tf.argmax(end_logits, axis=-1), depth=max_len, dtype=tf.int32, axis=-1)
+        predicted_labels = one_hot_start_labels + one_hot_end_labels
+
+        return start_logits, end_logits, predicted_labels
+
+
+@tf.function
+def train_eval_test(model, features, loss_fn, optimizer, is_training, is_predicting=False):
+    input_ids = features["input_ids"]
+    input_mask = features["input_mask"]
+    segment_ids = features["segment_ids"]
+    # label_id_list = features["label_id_list"]
+    # sentiment_ids = features["sentiment_id"]
+    # texts = features["texts"]
+    # selected_texts = features["selected_texts"]
+    idx_start = features["idx_start"]
+    idx_end = features["idx_end"]
+
+    if not is_predicting:
+        if is_training:
+            with tf.GradientTape() as tape:
+                start_logits, end_logits, predicted_labels = model([input_ids, input_mask, segment_ids], training=is_training)
+                loss = loss_fn(idx_start, start_logits)
+                loss += loss_fn(idx_end, end_logits)
+                scaled_loss = optimizer.get_scaled_loss(loss)
+
+            scaled_gradients = tape.gradient(scaled_loss, model.trainable_variables)
+            gradients = optimizer.get_unscaled_gradients(scaled_gradients)
+            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+            return loss, predicted_labels
+        else:
+            start_logits, end_logits, predicted_labels = model([input_ids, input_mask, segment_ids])
+            loss = loss_fn(idx_start, start_logits)
+            loss += loss_fn(idx_end, end_logits)
+            return loss, predicted_labels
+    else:
+        _, _, predicted_labels = model([input_ids, input_mask, segment_ids])
+        return predicted_labels
+
+
+def jaccard(str1, str2):
+    """
+    calculate the distance of str1 and str2
+    :param str1:
+    :param str2:
+    :return:
+    """
+    if type(str1) == type(b""):
+        str1 = str1.decode("utf-8")
+    str1, str2 = str(str1), str(str2)
+    a = set(str1.lower().split())
+    b = set(str2.lower().split())
+    c = a.intersection(b)
+    return float(len(c)) / (len(a) + len(b) - len(c))
 
 
 def eval_decoded_texts_in_position(texts, predicted_labels_origin, sentiment_ids, tokenizer):
@@ -465,15 +527,16 @@ def eval_decoded_texts_in_position(texts, predicted_labels_origin, sentiment_ids
 
     decoded_texts = []
     for i, text in enumerate(texts):
-        text_token_list.append(tokenizer.tokenize(text))
         if type(text) == type(b""):
             text = text.decode("utf-8")
+        text_token_list.append(tokenizer.encode(sequence=text).tokens[1:-1])
+
         # sentiment "neutral" or length < 2
         if sentiment_ids[i] == 0 or len(text.split()) < 2:
             decoded_texts.append(text)
 
         else:
-            text_token = tokenizer.tokenize(text)
+            text_token = tokenizer.encode(sequence=text).tokens[1:-1]
 
             # get selected_text
             selected_text = []
@@ -516,85 +579,123 @@ def eval_decoded_texts_in_position(texts, predicted_labels_origin, sentiment_ids
     return decoded_texts, text_token_list
 
 
-def train(model, dataset, loss_fn, optimizer):
-
-    @tf.function
-    def train_step(model, inputs, y_true, loss_fn, optimizer):
-        with tf.GradientTape() as tape:
-            y_pred = model(inputs, training=True)
-            loss = loss_fn(y_true[0], y_pred[0])
-            loss += loss_fn(y_true[1], y_pred[1])
-            scaled_loss = optimizer.get_scaled_loss(loss)
-
-        scaled_gradients = tape.gradient(scaled_loss, model.trainable_variables)
-        gradients = optimizer.get_unscaled_gradients(scaled_gradients)
-        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        return loss, y_pred
-
-    epoch_loss = 0.
-    for batch_num, sample in enumerate(dataset):
-        loss, y_pred = train_step(model, sample[:3], sample[4:6], loss_fn, optimizer)
-
-        epoch_loss += loss
-
-        print("training ... batch {batch_num + 1:03d} : "
-            f"train loss {epoch_loss / (batch_num + 1):.3f} ",
-            end='\r')
-
-
-def predict(model, dataset, loss_fn, optimizer):
-    @tf.function
-    def predict_step(model, inputs):
-        return model(inputs)
-
-    def to_numpy(*args):
-        out = []
-        for arg in args:
-            if arg.dtype == tf.string:
-                arg = [s.decode('utf-8') for s in arg.numpy()]
-                out.append(arg)
-            else:
-                arg = arg.numpy()
-                out.append(arg)
-        return out
-
-    # Initialize accumulators
-    offset = tf.zeros([0, MAX_SEQUENCE_LENGTH, 2], dtype=tf.dtypes.int32)
-    text = tf.zeros([0, ], dtype=tf.dtypes.string)
-    selected_text = tf.zeros([0, ], dtype=tf.dtypes.string)
-    sentiment = tf.zeros([0, ], dtype=tf.dtypes.string)
-    pred_start = tf.zeros([0, MAX_SEQUENCE_LENGTH], dtype=tf.dtypes.float32)
-    pred_end = tf.zeros([0, MAX_SEQUENCE_LENGTH], dtype=tf.dtypes.float32)
-
-    for batch_num, sample in enumerate(dataset):
-        print(f"predicting ... batch {batch_num + 1:03d}" + " " * 20, end='\r')
-
-        y_pred = predict_step(model, sample[:3])
-
-        # add batch to accumulators
-        pred_start = tf.concat((pred_start, y_pred[0]), axis=0)
-        pred_end = tf.concat((pred_end, y_pred[1]), axis=0)
-        offset = tf.concat((offset, sample[3]), axis=0)
-        text = tf.concat((text, sample[6]), axis=0)
-        selected_text = tf.concat((selected_text, sample[7]), axis=0)
-        sentiment = tf.concat((sentiment, sample[8]), axis=0)
-
-    # pred_start = tf.nn.softmax(pred_start)
-    # pred_end = tf.nn.softmax(pred_end)
-
-    pred_start, pred_end, text, selected_text, sentiment, offset = \
-        to_numpy(pred_start, pred_end, text, selected_text, sentiment, offset)
-
-    return pred_start, pred_end, text, selected_text, sentiment, offset
-
-
-
+# load the hyper-parameters
 hparame = Hparame()
 parser = hparame.parser
 hp = parser.parse_known_args()[0]
 
-train_features, eavl_features = process_data(hp)
-
 # get batch
+train_features, eval_features = process_data(hp)
 train_input_fn = input_fn_builder(features=train_features, seq_length=hp.MAX_SEQ_LENGTH, is_predicting=False)
+eval_input_fn = input_fn_builder(features=eval_features, seq_length=hp.MAX_SEQ_LENGTH, is_predicting=False)
 train_batches = train_input_fn(params={"batch_size": hp.BATCH_SIZE})
+eval_batches = eval_input_fn(params={"batch_size": hp.BATCH_SIZE})
+
+# Compute # train and warmup steps from batch size
+num_train_steps = int(len(train_features) / hp.BATCH_SIZE * hp.NUM_TRAIN_EPOCHS)
+num_warmup_steps = int(num_train_steps * hp.WARMUP_PROPORTION)
+num_train_batches = len(train_features) // hp.BATCH_SIZE + int(len(train_features) % hp.BATCH_SIZE != 0)
+num_eval_batches = len(eval_features) // hp.BATCH_SIZE + int(len(eval_features) % hp.BATCH_SIZE != 0)
+
+optimizer = tf.keras.optimizers.Adam(hp.LEARNING_RATE)
+optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(optimizer, 'dynamic')
+
+config = BertConfig(output_hidden_states=True, num_labels=2)
+BertQAModel.DROPOUT_RATE = 0.2
+BertQAModel.NUM_HIDDEN_STATES = 2
+model = BertQAModel.from_pretrained(hp.BERT_PATH, config=config)
+
+loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
+# checkpoint
+checkpoint_prefix = os.path.join(hp.OUTPUT_DIR, hp.model_output)
+
+tokenizer = tokenizers.BertWordPieceTokenizer(hp.BERT_VOCAB, lowercase=True)
+
+# actually to train and eval
+epoch_loss = 0.
+for i in tqdm(range(num_train_steps)):
+    loss, train_predicted_labels = train_eval_test(model, next(iter(train_batches)), loss_fn, optimizer, is_training=True)
+    epoch_loss += loss
+
+    # eval
+    if (i + 1) % hp.SAVE_CHECKPOINTS_STEPS == 0:
+        print("train loss %f " % (epoch_loss / (i + 1)))
+        # saving (checkpoint) the model every SAVE_CHECKPOINTS_STEPS epochs
+        model.save_weights(checkpoint_prefix.format(epoch=i))
+
+        eval_texts_list = []
+        predicted_label_list = []
+        eval_sentiment_ids_list = []
+        eval_selected_texts_list = []
+        for _ in range(num_eval_batches):
+            eval_batch = next(iter(eval_batches))
+            _, eval_predicted_labels = train_eval_test(model, eval_batch, loss_fn, optimizer, is_training=False)
+            eval_texts_list.extend(eval_batch["texts"].numpy().tolist())
+            predicted_label_list.extend(eval_predicted_labels.numpy().tolist())
+            eval_sentiment_ids_list.extend(eval_batch["sentiment_id"].numpy().tolist())
+            eval_selected_texts_list.extend(eval_batch["selected_texts"].numpy().tolist())
+
+        print("eval nums %d " % len(predicted_label_list))
+
+        # calculate the jaccards
+        eval_predict, text_token_list = eval_decoded_texts_in_position(eval_texts_list, predicted_label_list,
+                                                                       eval_sentiment_ids_list,
+                                                                       tokenizer)
+        jaccards = []
+        for i in range(len(eval_predict)):
+            jaccards.append(jaccard(eval_selected_texts_list[i], eval_predict[i]))
+        score = np.mean(jaccards)
+        print("jaccards: %f" % score)
+
+        
+model.save_weights(checkpoint_prefix.format(epoch=num_train_steps))
+
+# test model
+hparame = Hparame()
+parser = hparame.parser
+hp = parser.parse_known_args()[0]
+
+# get test batch
+test_features = process_test_data(hp)
+test_input_fn = input_fn_builder(features=test_features, seq_length=hp.MAX_SEQ_LENGTH, is_predicting=True)
+test_batches = test_input_fn(params={"batch_size": hp.BATCH_SIZE})
+test_len = len(test_features)
+num_test_batches = test_len // hp.BATCH_SIZE + int(test_len % hp.BATCH_SIZE != 0)
+
+optimizer = tf.keras.optimizers.Adam(hp.LEARNING_RATE)
+optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(optimizer, 'dynamic')
+
+config = BertConfig(output_hidden_states=True, num_labels=2)
+BertQAModel.DROPOUT_RATE = 0.2
+BertQAModel.NUM_HIDDEN_STATES = 2
+model = BertQAModel.from_pretrained(hp.BERT_PATH, config=config)
+
+loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
+tokenizer = tokenizers.BertWordPieceTokenizer(hp.BERT_VOCAB, lowercase=True)
+
+# Restore the weights
+model.load_weights(tf.train.latest_checkpoint(hp.OUTPUT_DIR))
+
+test_texts_list = []
+predicted_label_list = []
+test_sentiment_ids_list = []
+test_selected_texts_list = []
+for _ in range(num_test_batches):
+    test_batch = next(iter(test_batches))
+    test_predicted_labels = train_eval_test(model, test_batch, loss_fn, optimizer, is_training=False, is_predicting=True)
+    test_texts_list.extend(test_batch["texts"].numpy().tolist())
+    predicted_label_list.extend(test_predicted_labels.numpy().tolist())
+    test_sentiment_ids_list.extend(test_batch["sentiment_id"].numpy().tolist())
+    test_selected_texts_list.extend(test_batch["selected_texts"].numpy().tolist())
+
+# calculate the jaccards
+test_predict, text_token_list = eval_decoded_texts_in_position(test_texts_list, predicted_label_list,
+                                                               test_sentiment_ids_list,
+                                                               tokenizer)
+submission_df = pd.read_csv("/kaggle/input/tweet-sentiment-extraction/sample_submission.csv")
+submission_df.loc[:, "selected_text"] = test_predict[:test_len]
+submission_df.to_csv("submission.csv", index=False)
+
+
