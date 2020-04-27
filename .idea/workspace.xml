@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/in_kaggle.py" beforeDir="false" afterPath="$PROJECT_DIR$/in_kaggle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bert-base-with-tf2-1-mixed-precision.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bert-base-with-tf2-1-mixed-precision.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input_data/train_process.csv" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/train_process.csv" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +50,13 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.notebooks.jupyter.connections.configuration.JupyterServerConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -63,7 +70,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.my_test">
+  <component name="RunManager" selected="Python.word_counts">
     <configuration name="my_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="tweet_sentiment_extraction" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -108,12 +115,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="word_counts" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="tweet_sentiment_extraction" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/word_counts.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.word_counts" />
+        <item itemvalue="Python.word_counts" />
         <item itemvalue="Python.my_test" />
         <item itemvalue="Python.my_test" />
         <item itemvalue="Python.my_test" />
-        <item itemvalue="Python.process_data" />
       </list>
     </recent_temporary>
   </component>
@@ -140,7 +167,9 @@
       <workItem from="1587518145138" duration="15553000" />
       <workItem from="1587611316225" duration="8787000" />
       <workItem from="1587691655072" duration="25787000" />
-      <workItem from="1587788697767" duration="11602000" />
+      <workItem from="1587788697767" duration="16254000" />
+      <workItem from="1587865045747" duration="26818000" />
+      <workItem from="1587950742810" duration="6739000" />
     </task>
     <servers />
   </component>
