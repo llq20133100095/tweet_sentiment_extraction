@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bert-base-with-tf2-1-mixed-precision.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bert-base-with-tf2-1-mixed-precision.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data/train_process.csv" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/train_process.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bert-sentiment-word-with-tf2-1-mixed-precision.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bert-sentiment-word-with-tf2-1-mixed-precision.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/result.xlsx" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -119,6 +119,9 @@
       <module name="tweet_sentiment_extraction" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -169,7 +172,8 @@
       <workItem from="1587691655072" duration="25787000" />
       <workItem from="1587788697767" duration="16254000" />
       <workItem from="1587865045747" duration="26818000" />
-      <workItem from="1587950742810" duration="6739000" />
+      <workItem from="1587950742810" duration="21802000" />
+      <workItem from="1588036945163" duration="657000" />
     </task>
     <servers />
   </component>
