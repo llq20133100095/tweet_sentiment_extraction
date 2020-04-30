@@ -260,8 +260,27 @@ if __name__ == "__main__":
     # print(output)
 
 
-    tweet = " Sooo SAD I will miss you here in San Diego!!!"
-    selected_text = "Sooo SAD"
-    sentiment = "negative"
-    preprocess(tweet, selected_text, sentiment)
+    # tweet = " Sooo SAD I will miss you here in San Diego!!!"
+    # selected_text = "Sooo SAD"
+    # sentiment = "negative"
+    # preprocess(tweet, selected_text, sentiment)
 
+
+    from joblib import Parallel, delayed
+    import os
+    import time, math
+    import ctypes
+    def my_fun(i):
+        """ We define a simple function here.
+        """
+        time.sleep(1)
+        # id = ctypes.cdll.LoadLibrary('libc.so.6').syscall(186)
+        print("id: ")
+        return (i+1, i+2)
+
+
+    start = time.time()
+    # n_jobs is the number of parallel jobs
+    r = Parallel(n_jobs=2, backend="threading")(delayed(my_fun)(i) for i in range(2))
+    end = time.time()
+    print('{:.4f} s'.format(end - start))
