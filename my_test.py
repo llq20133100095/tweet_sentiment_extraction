@@ -273,7 +273,7 @@ if __name__ == "__main__":
     def my_fun(i):
         """ We define a simple function here.
         """
-        time.sleep(1)
+        time.sleep(10)
         # id = ctypes.cdll.LoadLibrary('libc.so.6').syscall(186)
         print("id: ")
         return (i+1, i+2)
@@ -281,6 +281,8 @@ if __name__ == "__main__":
 
     start = time.time()
     # n_jobs is the number of parallel jobs
-    r = Parallel(n_jobs=2, backend="threading")(delayed(my_fun)(i) for i in range(2))
+    r = Parallel(n_jobs=2, backend="threading", verbose=10)(delayed(my_fun)(i) for i in range(4))
+    for i in r:
+        print(i[0], i[1])
     end = time.time()
     print('{:.4f} s'.format(end - start))

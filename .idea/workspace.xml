@@ -3,12 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/albert.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/roberta.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bert-sentiment-word-with-tf2-1-mixed-precision.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bert-sentiment-word-with-tf2-1-mixed-precision.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data/vocab.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/vocab.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bert-base-with-tf2-1-mixed-precision.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bert-base-with-tf2-1-mixed-precision.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/my_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/process_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/result.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/roberta.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/super-duper-fast-pytorch-tpu-kernel.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/super-duper-fast-pytorch-tpu-kernel.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -179,7 +179,11 @@
       <workItem from="1587950742810" duration="21802000" />
       <workItem from="1588036945163" duration="22659000" />
       <workItem from="1588123094222" duration="8106000" />
-      <workItem from="1588209805076" duration="155000" />
+      <workItem from="1588209805076" duration="25169000" />
+      <workItem from="1588298213090" duration="9388000" />
+      <workItem from="1588383105294" duration="8453000" />
+      <workItem from="1588669196499" duration="7238000" />
+      <workItem from="1588728081189" duration="5357000" />
     </task>
     <servers />
   </component>
