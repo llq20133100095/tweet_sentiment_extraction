@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TensorFlow roBERTa - [0.712].ipynb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/result.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tweet_roberta.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tweet_roberta.ipynb" afterDir="false" />
     </list>
@@ -50,11 +51,12 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/thinking" />
     <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.notebooks.jupyter.connections.configuration.JupyterServerConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking" />
       <recent name="D:\software\python\workground\tweet_sentiment_extraction" />
     </key>
   </component>
@@ -182,7 +184,9 @@
       <workItem from="1588728081189" duration="12653000" />
       <workItem from="1588814986808" duration="13409000" />
       <workItem from="1588853132666" duration="2509000" />
-      <workItem from="1588900221301" duration="5158000" />
+      <workItem from="1588900221301" duration="6700000" />
+      <workItem from="1588933721996" duration="8698000" />
+      <workItem from="1588984482936" duration="7899000" />
     </task>
     <servers />
   </component>
