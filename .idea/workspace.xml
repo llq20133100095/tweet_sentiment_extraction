@@ -3,9 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data/train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/train.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/process_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/result.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/thinking/tweet_roberta.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/tweet_roberta.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thinking/tweet_roberta_processing.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/tweet_roberta_processing.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -58,6 +58,9 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking" />
       <recent name="D:\software\python\workground\tweet_sentiment_extraction" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -188,7 +191,13 @@
       <workItem from="1588933721996" duration="8698000" />
       <workItem from="1588984482936" duration="20220000" />
       <workItem from="1589072815531" duration="9484000" />
-      <workItem from="1589158048410" duration="17549000" />
+      <workItem from="1589158048410" duration="18799000" />
+      <workItem from="1589246958644" duration="20000" />
+      <workItem from="1589266523002" duration="14360000" />
+      <workItem from="1589336146742" duration="21189000" />
+      <workItem from="1589419686651" duration="21250000" />
+      <workItem from="1589505275925" duration="12659000" />
+      <workItem from="1589593713369" duration="72000" />
     </task>
     <servers />
   </component>
