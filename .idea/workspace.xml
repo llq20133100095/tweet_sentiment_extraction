@@ -3,9 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/process_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/process_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hownet/正面情感词语（英文）.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hownet/负面情感词语（英文）.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/result.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/thinking/tweet_roberta_processing.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/tweet_roberta_processing.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thinking/tweet_roberta_sentiment_words.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/tweet_roberta_sentiment_words.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -197,7 +199,15 @@
       <workItem from="1589336146742" duration="21189000" />
       <workItem from="1589419686651" duration="21250000" />
       <workItem from="1589505275925" duration="12659000" />
-      <workItem from="1589593713369" duration="72000" />
+      <workItem from="1589593713369" duration="9486000" />
+      <workItem from="1589697555235" duration="10169000" />
+      <workItem from="1589782967871" duration="7365000" />
+      <workItem from="1589850889115" duration="5504000" />
+      <workItem from="1589939108658" duration="11864000" />
+      <workItem from="1590023129760" duration="10373000" />
+      <workItem from="1590106339578" duration="21586000" />
+      <workItem from="1590197712670" duration="15212000" />
+      <workItem from="1590278656795" duration="7862000" />
     </task>
     <servers />
   </component>
