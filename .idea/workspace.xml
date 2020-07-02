@@ -3,11 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="ddfa90e9-d43d-4b9d-9504-f5b77242cd56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bert-sentiment-word-with-tf2-1-mixed-precision.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/bert-sentiment-word-with-tf2-1-mixed-precision.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hownet/正面情感词语（英文）.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/hownet/负面情感词语（英文）.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input_data/word_counts_prediction.csv" beforeDir="false" afterPath="$PROJECT_DIR$/input_data/word_counts_prediction.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/result.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/result.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/thinking/tweet_roberta_processing.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/tweet_roberta_processing.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thinking/adversarial_training/roberta_custom_adversarial.py" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/adversarial_training/roberta_custom_adversarial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thinking/roberta_0.714.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/roberta_0.714.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thinking/roberta_makeup.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/data_argumentation/roberta_clean_words.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thinking/roberta_mixup.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/roberta_mixup.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/thinking/tweet_roberta_sentiment_words.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/thinking/tweet_roberta_sentiment_words.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/word_counts.py" beforeDir="false" afterPath="$PROJECT_DIR$/word_counts.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,15 +60,20 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/thinking" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/thinking/ensamble" />
     <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.notebooks.jupyter.connections.configuration.JupyterServerConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking\ensamble" />
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking\eda" />
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking\adversarial_training" />
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking\data_argumentation" />
       <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking" />
-      <recent name="D:\software\python\workground\tweet_sentiment_extraction" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking\data_argumentation" />
+      <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking\adversarial_training" />
       <recent name="D:\software\python\workground\tweet_sentiment_extraction\thinking" />
     </key>
   </component>
@@ -77,7 +89,29 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.my_test">
+  <component name="RunManager" selected="Python.analysis">
+    <configuration name="analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="tweet_sentiment_extraction" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/thinking/eda" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/thinking/eda/analysis.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="my_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="tweet_sentiment_extraction" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -146,10 +180,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.my_test" />
+        <item itemvalue="Python.analysis" />
         <item itemvalue="Python.word_counts" />
-        <item itemvalue="Python.word_counts" />
-        <item itemvalue="Python.my_test" />
+        <item itemvalue="Python.analysis" />
+        <item itemvalue="Python.analysis" />
         <item itemvalue="Python.my_test" />
       </list>
     </recent_temporary>
@@ -207,7 +241,24 @@
       <workItem from="1590023129760" duration="10373000" />
       <workItem from="1590106339578" duration="21586000" />
       <workItem from="1590197712670" duration="15212000" />
-      <workItem from="1590278656795" duration="7862000" />
+      <workItem from="1590278656795" duration="73977000" />
+      <workItem from="1590540271309" duration="5100000" />
+      <workItem from="1590660472101" duration="1508000" />
+      <workItem from="1590800058193" duration="4107000" />
+      <workItem from="1590908330220" duration="3267000" />
+      <workItem from="1590971440432" duration="27387000" />
+      <workItem from="1591147574934" duration="15240000" />
+      <workItem from="1591231421312" duration="14614000" />
+      <workItem from="1591317367795" duration="20831000" />
+      <workItem from="1591407663343" duration="3388000" />
+      <workItem from="1591536566105" duration="1577000" />
+      <workItem from="1591580375170" duration="48171000" />
+      <workItem from="1591922971439" duration="11026000" />
+      <workItem from="1592093331851" duration="49601000" />
+      <workItem from="1592364004918" duration="12658000" />
+      <workItem from="1592529724283" duration="1898000" />
+      <workItem from="1592873461842" duration="606000" />
+      <workItem from="1593692960620" duration="944000" />
     </task>
     <servers />
   </component>
@@ -229,6 +280,18 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="jupyter-line">
+          <url>file://$PROJECT_DIR$/thinking/data_argumentation/tweet_roberta_mixtext.ipynb</url>
+          <line>14</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="jupyter-line">
+          <url>file://$PROJECT_DIR$/thinking/adversarial_training/roberta-adversarial-dropout_0.715_lgb.ipynb</url>
+          <line>12</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

@@ -7,12 +7,30 @@ from sklearn.feature_extraction.text import CountVectorizer
 # Import the string dictionary that we'll use to remove punctuation
 import string
 
+def to_sentiment(sentiment):
+    sentiment_pos = ['enthusiasm', 'love', 'fun', 'happiness', 'relief']
+    sentiment_neg = ['sadness', 'worry', 'surprise', 'hate', 'boredom', 'anger']
+    sentiment_neu = ['empty', 'neutral']
+
+    if sentiment in sentiment_pos:
+        return "positive"
+    if sentiment in sentiment_neg:
+        return "negative"
+    if sentiment in sentiment_neu:
+        return "neutral"
+
 # Import datasets
 train = pd.read_csv('./input_data/train.csv')
 test = pd.read_csv('./input_data/test.csv')
 sample = pd.read_csv('./input_data/sample_submission.csv')
-
-test["selected_text"] = test["text"]
+# private_df = pd.read_csv("./input_data/test_private_df.csv")
+#
+# private_df = private_df.rename(columns={"content": "text", "tweet_id": "textID", })
+# del private_df["author"], private_df["in_private"]
+# private_df["sentiment"] = private_df.apply(lambda x: to_sentiment(x["sentiment"]), axis=1)
+#
+# test["selected_text"] = test["text"]
+# private_df["selected_text"] = private_df["text"]
 
 # merge two data
 data = pd.concat([train, test])
@@ -102,6 +120,7 @@ def calculate_selected_text(df_row, tol=0):
     selection_str = ''  # This will be our choice
     lst = sorted(subsets, key=len)  # Sort candidates by length
 
+    a1 = []
     for i in range(len(subsets)):
 
         new_sum = 0  # Sum for the current substring
@@ -123,14 +142,13 @@ def calculate_selected_text(df_row, tol=0):
 
     return ' '.join(selection_str)
 
-
 tol = 0.001
 
 data['predicted_selection'] = ''
 
 for index, row in data.iterrows():
     selected_text = calculate_selected_text(row, tol)
-
-    data.loc[data['textID'] == row['textID'], ['predicted_selection']] = selected_text
-
-data[["textID", "predicted_selection"]].to_csv("input_data/word_counts_prediction.csv", index=False)
+    break
+#     data.loc[data['textID'] == row['textID'], ['predicted_selection']] = selected_text
+#
+# data[["textID", "predicted_selection"]].to_csv("input_data/word_counts_prediction.csv", index=False)

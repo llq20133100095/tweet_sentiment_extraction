@@ -21,26 +21,9 @@ class TFRobertaMainLayer(TFBertMainLayer):
     Same as TFBertMainLayer but uses TFRobertaEmbeddings.
     """
 
-    DROPOUT_RATE = 0.1
-    NUM_HIDDEN_STATES = 2
-
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
         self.embeddings = TFRobertaEmbeddings(config, name="embeddings")
-
-        self.dropout = L.Dropout(self.DROPOUT_RATE)
-        self.conv1d_128 = L.Conv1D(128, 2, padding='same')
-        self.conv1d_64 = L.Conv1D(64, 2, padding='same')
-        self.leakyreLU = L.LeakyReLU()
-        self.dense = L.Dense(1, dtype='float32')
-        self.flatten = L.Flatten()
-
-        self.dropout_2 = L.Dropout(self.DROPOUT_RATE)
-        self.conv1d_128_2 = L.Conv1D(128, 2, padding='same')
-        self.conv1d_64_2 = L.Conv1D(64, 2, padding='same')
-        self.leakyreLU_2 = L.LeakyReLU()
-        self.dense_2 = L.Dense(1, dtype='float32')
-        self.flatten_2 = L.Flatten()
 
     def get_input_embeddings(self):
         return self.embeddings
@@ -136,7 +119,46 @@ class TFRobertaMainLayer(TFBertMainLayer):
         # sequence_output, pooled_output, (hidden_states), (attentions)
         outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
 
-        x1 = self.dropout(outputs[2][-1], training=training)
+        return outputs
+
+
+class RoBertQAModel(TFRobertaPreTrainedModel):
+
+    DROPOUT_RATE = 0.1
+    NUM_HIDDEN_STATES = 2
+
+    def __init__(self, config, *inputs, **kwargs):
+        super().__init__(config, *inputs, **kwargs)
+
+        self.robert = TFRobertaMainLayer(config, name="roberta")
+
+        self.dropout = L.Dropout(self.DROPOUT_RATE)
+        self.conv1d_128 = L.Conv1D(128, 2, padding='same')
+        self.conv1d_64 = L.Conv1D(64, 2, padding='same')
+        self.leakyreLU = L.LeakyReLU()
+        self.dense = L.Dense(1, dtype='float32')
+        self.flatten = L.Flatten()
+
+        self.dropout_2 = L.Dropout(self.DROPOUT_RATE)
+        self.conv1d_128_2 = L.Conv1D(128, 2, padding='same')
+        self.conv1d_64_2 = L.Conv1D(64, 2, padding='same')
+        self.leakyreLU_2 = L.LeakyReLU()
+        self.dense_2 = L.Dense(1, dtype='float32')
+        self.flatten_2 = L.Flatten()
+
+    @tf.function
+    def call(self, inputs, **kwargs):
+
+        embedding_output, extended_attention_mask, head_mask = self.robert(inputs, **kwargs)
+        _, _, hidden_states = self.robert.call_run(embedding_output, extended_attention_mask, head_mask, training=kwargs.get("training", False))
+
+        return embedding_output, extended_attention_mask, head_mask
+
+    @tf.function
+    def call_run(self, embedding_output, extended_attention_mask, head_mask, training):
+        _, _, hidden_states = self.robert.call_run(embedding_output, extended_attention_mask, head_mask, training=training)
+
+        x1 = self.dropout(hidden_states[-1], training=training)
         x1 = self.conv1d_128(x1)
         x1 = self.leakyreLU(x1)
         x1 = self.conv1d_64(x1)
@@ -144,16 +166,16 @@ class TFRobertaMainLayer(TFBertMainLayer):
         start_logits = self.flatten(x1)
         start_logits = L.Activation('softmax')(start_logits)
 
-        x2 = self.dropout_2(outputs[2][-2], training=training)
+        x2 = self.dropout_2(hidden_states[-2], training=training)
         x2 = self.conv1d_128_2(x2)
         x2 = self.leakyreLU_2(x2)
         x2 = self.conv1d_64_2(x2)
         x2 = self.dense_2(x2)
         end_logits = self.flatten_2(x2)
         end_logits = L.Activation('softmax')(end_logits)
-
         return start_logits, end_logits
 
+    @tf.function
     def virtual_adversarial(self, x1, extended_attention_mask, head_mask, power_iterations=1, p_mult=0.02):
         bernoulli = tfp.distributions.Bernoulli
         y_pred = self.call_run(x1, extended_attention_mask, head_mask, training=True)
@@ -192,19 +214,3 @@ class TFRobertaMainLayer(TFBertMainLayer):
         v_adv_loss1 = tfp.distributions.kl_divergence(prob_dist1, bernoulli(probs=p_prob1), allow_nan_stats=False)
         v_adv_loss2 = tfp.distributions.kl_divergence(prob_dist2, bernoulli(probs=p_prob2), allow_nan_stats=False)
         return tf.reduce_mean(v_adv_loss1) + tf.reduce_mean(v_adv_loss2)
-
-
-class RoBertQAModel(TFRobertaPreTrainedModel):
-
-    def __init__(self, config, *inputs, **kwargs):
-        super().__init__(config, *inputs, **kwargs)
-
-        self.robert = TFRobertaMainLayer(config, name="roberta")
-
-    @tf.function
-    def call(self, inputs, **kwargs):
-
-        embedding_output, extended_attention_mask, head_mask = self.robert(inputs, **kwargs)
-        y_pred = self.robert.call_run(embedding_output, extended_attention_mask, head_mask, training=kwargs.get("training", False))
-
-        return y_pred

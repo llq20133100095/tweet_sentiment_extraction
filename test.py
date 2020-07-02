@@ -93,3 +93,26 @@ with tf.Session() as sess:
     submission_df = pd.read_csv('./input_data/sample_submission.csv')
     submission_df.loc[:, 'selected_text'] = test_predict
     submission_df.to_csv("./input_data/submission.csv", index=False)
+
+
+write_text = open("D:/work/BT3_wifi/kail/wifi_next.txt", "w")
+write_flag = False
+# with open("D:/work/BT3_wifi/kail/WIFI密码字典955M.txt", "r") as f:
+#     line = f.readline()
+#     while True:
+#         if line:
+#             if line.strip("\n") == "13300223":
+#                 write_flag = True
+#             if write_flag:
+#                 write_text.write(line)
+#         else:
+#             break
+
+res = []
+
+for _ in range(8):
+    for i in range(10):
+        res.append(i)
+
+write_text.close()
+
